@@ -50,21 +50,21 @@ assign GPIO_0[2] = trig2;
 
 // =========== 2X sensor drivers ===========
 reg  start1, start2;
-wire done1, done2;
+wire busy1, busy2, done1, done2;
 wire [16:0] us1, us2;
 
 hcsr04_driver sensor1 (
     .clk(CLOCK_50), .rst_n(rst_n), .clk_1us(clk_1us),
     .start(start1), .echo(echo1),
 
-    .trig(trig1), .distance_us(us1), .done(done1)
+    .trig(trig1), .busy(busy1), .distance_us(us1), .done(done1)
 );
 
 hcsr04_driver sensor2 (
     .clk(CLOCK_50), .rst_n(rst_n), .clk_1us(clk_1us),
     .start(start2), .echo(echo2),
 
-    .trig(trig2), .distance_us(us2), .done(done2)
+    .trig(trig2), .busy(busy2), .distance_us(us2), .done(done2)
 );
 
 //====== State scheduler =======
@@ -89,8 +89,9 @@ always @(posedge CLOCK_50 or negedge rst_n) begin
         start2 <= 1'b0;
         case (sched_state)
             S_START1: begin
-                start1 <= 1'b1;
-                sched_state <= S_WAIT1;
+                if (!busy1) begin
+                    start1 <= 1'b1;
+                    sched_state <= S_WAIT1; end
             end
             S_WAIT1: begin
                 if (done1) begin
@@ -99,8 +100,9 @@ always @(posedge CLOCK_50 or negedge rst_n) begin
                 end
             end
             S_START2: begin
-                start2      <= 1'b1;
-                sched_state <= S_WAIT2;
+                if (!busy2) begin
+                    start2  <= 1'b1;
+                    sched_state <= S_WAIT2; end
             end
             S_WAIT2: begin
                 if (done2) begin

@@ -16,6 +16,7 @@ module hcsr04_driver #(
     input echo,
 
     output reg trig,
+    output reg busy,
     output reg [16:0] distance_us,
     output reg done
 );
@@ -36,6 +37,7 @@ always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         state <= IDLE;
         trig  <= 1'b0;
+        busy  <= 1'b0;
         distance_us <= 17'd0;
         done <= 1'b0;
         us_counter <= 17'd0;
@@ -47,7 +49,9 @@ always @(posedge clk or negedge rst_n) begin
         case (state)
             IDLE: begin
                 trig <= 1'b0;
+                busy <= 1'b0;
                 if (start) begin
+                    busy <= 1'b1;
                     us_counter <= 17'd0;
                     state <= TRIG;
                 end

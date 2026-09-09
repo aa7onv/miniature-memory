@@ -25,7 +25,7 @@ localparam IDLE = 3'd0,
            TRIG = 3'd1,
            WAIT_RISE = 3'd2,
            MEASURE = 3'd3,
-           LATCH = 3'd4;
+           LATCH = 3'd4,
            RECOVER = 3'd5;
 
 reg [2:0] state;

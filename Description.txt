@@ -1,0 +1,72 @@
+Ubuntu-based Linux image for the DE1-SoC board. For details on using the image, refer to the document "Using Linux on the DE1-SoC"
+
+Desktop GUI: via VNC
+
+Kernel: 3.18
+
+Default sof: DE1 SoC Computer (loaded after bootup via init.d script)
+
+SD Card size requirement: 8GB
+
+U-Boot loads sof: Yes
+
+Included features:
+-OpenCL support, and sample openCL programs: helloworld, vector_add, swapper, boardtest
+-256MB CMA region allocated (for OpenCL or other applications)
+
+Included Apps:
+-helloworld
+-increment_leds
+-pushbutton_ieq_handler
+-simple_python_gui
+-simple_java_gui
+
+REVISIONS LIST:
+<Apr 2 2019>
+-Installed ROS for ARM systems. For more information, and exact steps on what was done, see installing_ros_on_de_series.txt
+
+<Jun 13 2018>
+-Updated C4DE/PyDE device drivers to print out warnings when incorrect arguments are provided.
+
+<May 8 2018>
+-Updated OpenCL runtime to Intel environment from Altera
+-Updated OpenCL init script to support OpenCL makefiles that use env var INTELFPGAOCLSDKROOT
+
+<Apr 30 2018>
+-Updated computer system rbf to fix adc core
+
+<Jan 31 2018>
+-Updated computer system rbf
+-Example programs intended for use with the Using Linux on DE-Series Boards tutorial are now in ~/tutorial_files
+-Updated PyDE, C4DE libraries and drivers. These files are now located in ~/Linux_Libraries
+-Drivers are now located in ~/Linux_Libraries/drivers instead of /lib/modules/3.18.0/kernel/drivers/IntelFPGAUP/
+-Drivers are no longer automatically loaded at boot
+
+<Aug 8 2017>
+-Added "PyDE" Python library for using the peripherals included in the DE1-SoC Computer System (LEDs, HEX, KEYs, SWs, VGA, Accelerometer)
+-Added C4DE audio support and example
+
+<Jul 10 2017>
+-Added "C4DE" C library for using the peripherals included in the DE1-SoC Computer System (LEDs, HEX, KEYs, SWs, VGA, Accelerometer)
+-Added drivers for the peripherals included in the DE1-SoC Computer System, in /lib/modules/3.18.0/kernel/drivers/IntelFPGAUP/. These drivers are used together with C4DE.
+
+<Mar 3 2017>
+-Uninstalled unnecessary programs
+-Added python GUI example
+
+<Oct 18 2016>
+-zeroed out bits in partitions to reduce the compressed image size
+
+<Aug 18 2016>
+-kernel is now 3.18
+
+<June 17 2016> 
+-Wifi drivers built into kernel + firmware
+-Added VNC server which automatically runs on boot
+  -VNC display size can be adjusted using xrandr
+  -clipboard sharing support
+-Default STATIC ip 192.168.0.123 on eth0:1 and 192.168.1.123 on eth0:2
+-FTP server (user: root password: password)
+-New apps: gvim, emacs, codeblocks
+-Fixed kbuild warnings due to timestamps
+-misc directory with ip config scripts, program fpga script

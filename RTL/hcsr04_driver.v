@@ -16,7 +16,7 @@ module hcsr04_driver #(
     input echo,
 
     output reg trig,
-    output reg busy,
+    output reg busy,           // high from start until fully back in IDLE (post-recovery)
     output reg [16:0] distance_us,
     output reg done
 );
@@ -89,6 +89,12 @@ always @(posedge clk or negedge rst_n) begin
                 if (clk_1us) begin
                     if (echo) begin
                         echo_counter <= echo_counter + 1'b1;
+                        // safety timeout: if echo  never falls (stuck-high fault, noise, bad connection)
+                        // a recovery instead of hanging this FSM forever.
+                        if (echo_counter >= TIMEOUT_US) begin
+                            distance_us <= 17'd0; // report 0 = fault/out of range
+                            state <= LATCH;
+                        end
                     end else begin
                         distance_us <= echo_counter;
                         state <= LATCH;

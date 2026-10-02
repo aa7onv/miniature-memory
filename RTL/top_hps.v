@@ -27,7 +27,7 @@
 // Fitting, which assigns these automatically.
 
 
-module top (
+module top_hps (
     input CLOCK_50,
     input [3:0] KEY,
     inout [35:0] GPIO_0,
@@ -215,7 +215,7 @@ seg7_decode u_h5 (.bcd(d2_hundreds), .seg(HEX5));
 soc_system u0 (
     .clk_clk (CLOCK_50),
     // tie high. HPS manages its own reset internally, and the HPS-to-FPGA bridge is always on
-    .reset_reset_nx(1'b1),
+    .reset_reset_n(1'b1),
 
     .dist1_export (dist1_cm),
     .dist2_export (dist2_cm),

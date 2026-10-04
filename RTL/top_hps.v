@@ -13,18 +13,16 @@
 //   HEX3-HEX5 -> sensor 2 distance (ones, tens, hundreds)
 //   LEDR      -> driven by soc_system's leds PIO (Linux can write here
 //                directly over the lightweight bridge, independent of
-//                the sensor logic -- this is the same LED sanity check
+//                the sensor logic -> this is the same LED sanity check
 //                used in mmap_test.c)
 //
 // NOTE: memory_* and hps_io_* ports are the DE1-SoC
-// dedicated HPS hard-block pins (DDR3 + Ethernet/SD/USB/UART), NOT
-// regular FPGA I/O. 
-// Their physical pin locations are fixed by the chip
-// itself -- you do NOT manually assign them in Pin Planner. 
-// Instead,
-// after running Analysis & Synthesis, run the generated
+// dedicated HPS hard-block pins (DDR3 + Ethernet/SD/USB/UART), 
+//  NOT regular FPGA I/O. 
+// their physical pin locations are fixed by the chip itself
+// after Analysis & Synthesis, run the generated
 // hps_sdram_p0_pin_assignments.tcl script (Tools -> Tcl Scripts) BEFORE
-// Fitting, which assigns these automatically.
+// Fitting, which assigns these automatically. // do NOT manually assign them in Pin Planner. 
 
 
 module top_hps (

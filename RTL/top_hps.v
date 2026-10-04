@@ -59,7 +59,7 @@ module top_hps (
 
     // ---- HPS dedicated USB1 pins ----
     inout [7:0] HPS_USB_DATA,
-    output HPS_USB_CLKOUT,
+    input HPS_USB_CLKOUT,
     output HPS_USB_STP,
     input HPS_USB_DIR,
     input HPS_USB_NXT,

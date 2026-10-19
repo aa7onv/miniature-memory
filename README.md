@@ -4,7 +4,21 @@ Real-time distance sensing on a Cyclone V SoC. Two HC-SR04 ultrasonic sensors ar
 
 Target hardware: Terasic **DE1-SoC** (Intel Cyclone V SoC 5CSEMA5F31C6: FPGA fabric + dual-core ARM Cortex-A9 HPS).
 
+# DEMOS!!!
+
+Video Demo - In the first half of the video im changing my distance from sensor1 and it is changing the color gradient.
+In the second half im using sensor2 to control the scale of the visual.
+[![Demo](https://youtu.be/h2BT_Ofq0AM)]
+
+Concept art 1: One sensor is hue shifting the gradient colors, the other sensor is controlling the movement/generation of the blobs.
+(the blob concept didnt come out exxactly how I wanted, need more TD practice)
+[![Art 1](https://youtu.be/vKqICU2nvR8)] 
+
+Concept art 2: Here this is a one sensor setup where the distance value is inversly proportional to the line "pulses"
+[![Art 1](https://youtu.be/Aw8K27rW67U)]
+
 ## Hardware Setup
+![Setup](docs/HW.jpg)
 
 - Terasic DE1-SoC board (Cyclone V SoC)
 - 2x HC-SR04 ultrasonic sensors
@@ -174,7 +188,6 @@ An **OSC In CHOP** listening on the chosen UDP port receives the two channels, `
 
 
 ---
-
 
 ## Future Work
 

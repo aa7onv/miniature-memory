@@ -37,7 +37,7 @@ Concept art 2: Here this is a one sensor setup where the distance value is inver
 - **Custom Verilog FSMs** that generate trigger pulses and measure echo pulse widths with 1 µs resolution, including timeout guards and a `busy` handshake for safe multi-sensor scheduling.
 - **Custom Avalon Memory-Mapped slave** packaged as a Platform Designer component and wired to the HPS lightweight HPS-to-FPGA bridge.
 - **Platform Designer system built from scratch**: HPS configuration, clocking, exports, address map, and generated interconnect.
-- **Linux userspace register access** via `mmap()` on `/dev/mem`, with no kernel driver.
+- **Linux userspace register access** via `mmap()` on `/dev/mem`.
 
 
 ---
@@ -108,7 +108,7 @@ Concept art 2: Here this is a one sensor setup where the distance value is inver
 
 An HC-SR04 measures distance by emitting an ultrasonic burst when its Trig pin receives a 10 µs pulse, then raising its Echo pin for a duration proportional to the round-trip time of the sound. With sound travelling about 340 m/s, the echo high-time in microseconds divided by 58 gives distance in centimetres.
 
-**Electrical interface:** the sensors run at 5 V and their Echo output is 5 V, but the Cyclone V GPIO is 3.3 V only. Each Echo line passes through its own 1 kΩ / 2 kΩ resistor divider (about 3.3 V after division) before reaching the FPGA. The 3.3 V Trig output from the FPGA is above the sensor's logic-high threshold, so Trig connects directly. The sensors are powered from the DE1-SoC's 5 V GPIO header pin, with a common ground.
+Peripherials & Voltage divider: the sensors run at 5 V and their Echo output is 5 V, but the Cyclone V GPIO is 3.3 V only. Each Echo line passes through its own 1 kΩ / 2 kΩ resistor divider (about 3.3 V after division) before reaching the FPGA. The 3.3 V Trig output from the FPGA is above the sensor's logic-high threshold, so Trig connects directly. The sensors are powered from the DE1-SoC's 5 V GPIO header pin, with a common ground.
 
 ### 2. FPGA fabric design
 
@@ -154,15 +154,14 @@ The HPS and the fabric are tied together by a Platform Designer (Qsys) system, `
 | Sensor slave, word 0 | `0x0100` | `0xFF200100` | Sensor 1 distance (cm) |
 | Sensor slave, word 1 | `0x0104` | `0xFF200104` | Sensor 2 distance (cm) |
 
-**The custom Avalon-MM slave (`sensor_avalon_slave`).** The interface is minimal: `clk`, `reset`, a 1-bit word `address`, `read`, and a 32-bit `readdata`. The two sensor distance values enter as exported **conduits** (`dist1`, `dist2`, 10 bits each) and are zero-extended into 32-bit words. The slave is read-only with a **fixed read latency of 1** and no `waitrequest`: `readdata` is registered when `read` is asserted. The component declares word-based address units, so word address 1 appears on the bus as byte offset `0x4`. All 32 bits are used as the register width because that is the native width of the lightweight bridge and of the ARM's 32-bit loads, so no width adaptation is needed.
+**The custom Avalon-MM slave (`sensor_avalon_slave`).** The interface is minimal: `clk`, `reset`, a 1-bit word `address`, `read`, and a 32-bit `readdata`. The two sensor distance values enter as exported **conduits** (`dist1`, `dist2`, 10 bits each) and are zero-extended into 32-bit words. The slave is read-only with a **fixed read latency of 1**. `readdata` is registered when `read` is asserted. The component declares word-based address units, so word address 1 appears on the bus as byte offset `0x4`. All 32 bits are used as the register width because that is the native width of the lightweight bridge and of the ARM's 32-bit loads, so no width adaptation is needed.
 
 **Top-level integration.** `top.v` instantiates `soc_system`, connects the board clock, feeds `dist1_cm` and `dist2_cm` into the sensor conduits, drives `LEDR` from the PIO, and connects the HPS DDR3 and peripheral ports. The HPS reset input is deliberately tied inactive rather than to a pushbutton: `KEY[0]` resets only the sensor logic, so resetting the FSMs never reboots the running Linux system.
 
-**Physical design details.** After Analysis and Synthesis, the generated `hps_sdram_p0_pin_assignments.tcl` script assigns the dedicated HPS DDR3 pin locations and on-chip termination settings before fitting.
 
 ### 4. HPS and embedded Linux
 
-The HPS boots Linux from a microSD card image (Ubuntu/Linaro-based, with GCC and Python, kernel 3.18) and is reachable over Ethernet and SSH. The FPGA fabric is configured over JTAG with the Quartus Programmer after Linux has booted, which replaces the board's default reference design in the fabric without disturbing the running HPS.
+The HPS boots Linux from a microSD card image (Ubuntu/Linaro-based, with GCC and Python, kernel 3.18) and is reachable over Ethernet and SSH. The FPGA fabric is configured over JTAG with the Quartus Programmer after Linux has booted.
 
 **Register access with `mmap()`.** Linux user processes cannot touch physical addresses directly, so the program maps the bridge window into its own virtual address space:
 
